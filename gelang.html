@@ -2,49 +2,55 @@
 <html lang="id">
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>HOLOGRAM DIAMOND</title>
+    <title>REAL DIAMOND AR</title>
     
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
     
     <script>
-      AFRAME.registerComponent('make-hologram', {
+      AFRAME.registerComponent('apply-realism', {
         init: function () {
-          this.el.addEventListener('model-loaded', e => {
-            const mesh = this.el.getObject3D('mesh');
-            if (!mesh) return;
+          // Kita ambil gambar langit (env map)
+          const scene = this.el.sceneEl.object3D;
+          const loader = new THREE.TextureLoader();
+          
+          // Gambar Studio Lighting (Biar kinclong kayak foto studio)
+          const envTexture = loader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/2294472375_24a3b8ef46_o.jpg');
+          envTexture.mapping = THREE.EquirectangularReflectionMapping;
 
-            mesh.traverse(node => {
+          this.el.addEventListener('model-loaded', () => {
+            const mesh = this.el.getObject3D('mesh');
+            mesh.traverse((node) => {
               if (node.isMesh) {
-                // KITA GANTI KULITNYA JADI CAHAYA MURNI
-                // MeshBasicMaterial = Gak butuh lampu, dia nyala sendiri
-                node.material = new THREE.MeshBasicMaterial({
-                  color: 0x00ffff,   // WARNA CYAN (Ganti sesuka hati)
-                  transparent: true, // Tembus pandang dikit
-                  opacity: 0.8,      // Tingkat kepekatan (0.0 - 1.0)
-                  side: THREE.DoubleSide, // Kelihatan dari luar & dalam
-                  blending: THREE.AdditiveBlending, // EFEK LASER/GLOWING (PENTING!)
-                  depthWrite: false  // Biar gak numpuk aneh
-                });
+                // 1. TEMPEL REFLEKSI
+                node.material.envMap = envTexture;
+                node.material.envMapIntensity = 2.0; // Makin tinggi makin silau
+                node.material.needsUpdate = true;
+                
+                // 2. KOREKSI MATERIAL (Biar gak plastik)
+                // Kalau model aslinya udah bagus, ini opsional. 
+                // Tapi biar aman kita set jadi KACA/LOGAM
+                node.material.metalness = 1.0;  // Wajib 1 buat berlian
+                node.material.roughness = 0.0;  // Wajib 0 biar licin
+                node.material.color.setHex(0xffffff); // Warna dasar putih (biar nerima refleksi)
               }
             });
           });
         }
       });
     </script>
-    
+
     <style>
       body { margin: 0; overflow: hidden; background: black; }
       #overlay {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.85);
+        background: rgba(0,0,0,0.8);
         display: flex; flex-direction: column; justify-content: center; align-items: center;
         z-index: 999;
       }
       #start-btn {
-        padding: 12px 30px; background: #00ffff; border: none;
-        color: black; font-weight: 900; border-radius: 50px; cursor: pointer;
-        box-shadow: 0 0 25px #00ffff; font-family: sans-serif; letter-spacing: 2px;
+        padding: 12px 30px; background: white; border: none;
+        color: black; font-weight: bold; border-radius: 5px; cursor: pointer;
       }
       .hidden { display: none !important; }
     </style>
@@ -52,12 +58,13 @@
   
   <body>
     <div id="overlay">
-      <h1 style="color: white; font-family: sans-serif; margin-bottom: 5px;">HOLO-MODE</h1>
-      <button id="start-btn">SCAN SEKARANG</button>
+      <h1 style="color: white; font-family: sans-serif;">ORIGINAL QUALITY</h1>
+      <button id="start-btn">LIHAT BARANG</button>
     </div>
 
     <a-scene mindar-image="imageTargetSrc: ./targets/bunga.mind;" 
-             color-space="sRGB" renderer="colorManagement: true; sortObjects: true;"
+             color-space="sRGB" 
+             renderer="colorManagement: true; physicallyCorrectLights: true; exposure: 1.2; toneMapping: ACESFilmic;"
              vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
       
       <a-assets>
@@ -66,26 +73,21 @@
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
+      <a-light type="ambient" intensity="1"></a-light>
+      <a-light type="directional" position="2 4 2" intensity="3" color="white"></a-light>
+      <a-light type="directional" position="-2 -4 2" intensity="1" color="#ccffff"></a-light>
+
       <a-entity id="ar-target" mindar-image-target="targetIndex: 0">
         
-        <a-entity position="0 0 0" scale="0.3 0.3 0.3">
-
+        <a-entity position="0 0 0" scale="0.5 0.5 0.5">
             <a-gltf-model src="#diamond-model" 
-                          make-hologram 
-                          rotation="0 0 0" position="0 0.5 0" scale="1 1 1"
-                          animation="property: rotation; to: 0 360 0; dur: 8000; easing: linear; loop: true">
+                          apply-realism 
+                          position="0 0 0" 
+                          rotation="0 0 0"
+                          animation="property: rotation; to: 0 360 0; dur: 10000; easing: linear; loop: true">
             </a-gltf-model>
-
-            <a-sphere radius="0.5" color="white" position="0 0.5 0"
-                      material="shader: flat; opacity: 0.9"
-                      animation="property: scale; to: 1.2 1.2 1.2; dir: alternate; dur: 500; loop: true">
-            </a-sphere>
-
-            <a-ring radius-inner="1.5" radius-outer="1.55" color="#00ffff" rotation="-90 0 0" position="0 0 0"
-                    material="shader: flat; transparent: true; opacity: 0.5; blending: additive"
-                    animation="property: scale; to: 1.1 1.1 1.1; dir: alternate; dur: 1000; loop: true"></a-ring>
-
         </a-entity>
+
       </a-entity>
     </a-scene>
 
