@@ -2,23 +2,24 @@
 <html lang="id">
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>CYBER DIAMOND BRACELET</title>
+    <title>REAL BLUE DIAMOND</title>
     
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.0.0/dist/aframe-extras.min.js"></script>
     
     <style>
       body { margin: 0; overflow: hidden; background: black; }
       #overlay {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.8);
+        background: radial-gradient(circle, #001f3f, #000000);
         display: flex; flex-direction: column; justify-content: center; align-items: center;
         z-index: 999;
       }
       #start-btn {
-        padding: 12px 30px; background: #00ffff; color: black; font-weight: 800;
-        border: none; border-radius: 30px; cursor: pointer;
-        box-shadow: 0 0 20px #00ffff;
+        padding: 12px 30px; background: transparent; border: 2px solid #00ffff;
+        color: #00ffff; font-weight: 800; border-radius: 30px; cursor: pointer;
+        box-shadow: 0 0 15px #00ffff; letter-spacing: 2px;
       }
       .hidden { display: none !important; }
     </style>
@@ -26,48 +27,48 @@
   
   <body>
     <div id="overlay">
-      <h1 style="color: #00ffff; font-family: sans-serif; text-shadow: 0 0 10px #00ffff;">SYSTEM LINK</h1>
-      <button id="start-btn">ACTIVATE</button>
+      <h1 style="color: white; font-family: sans-serif; font-size: 18px; letter-spacing: 3px;">LUXURY MODE</h1>
+      <button id="start-btn">SCAN GELANG</button>
     </div>
 
     <a-scene mindar-image="imageTargetSrc: ./targets/bunga.mind;" 
-             color-space="sRGB" renderer="colorManagement: true, sortObjects: true"
+             color-space="sRGB" renderer="colorManagement: true; physicallyCorrectLights: true; antialias: true;"
              vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
       
+      <a-assets>
+        <a-asset-item id="diamond-model" src="./assets/models/diamond.glb"></a-asset-item>
+        
+        <img id="env-map" src="https://cdn.glitch.global/d2966571-3836-4109-9407-395a89601689/equirectangular_cyber.jpg?v=1664899253450" crossorigin="anonymous">
+      </a-assets>
+
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+      <a-light type="ambient" intensity="0.5"></a-light>
+      <a-light type="point" position="-2 3 2" intensity="3" color="#00ffff" distance="10"></a-light>
+      <a-light type="point" position="2 4 2" intensity="4" color="#ffffff" distance="10"></a-light>
 
       <a-entity id="ar-target" mindar-image-target="targetIndex: 0">
         
-        <a-entity position="0 0 0" scale="0.35 0.35 0.35">
+        <a-entity position="0 0 0" scale="0.3 0.3 0.3">
 
-            <a-sphere radius="0.3" color="#ffffff"
-                      material="shader: flat; opacity: 0.8; color: #ffffff"
-                      animation="property: scale; to: 1.2 1.2 1.2; dir: alternate; dur: 500; loop: true">
-            </a-sphere>
-            <a-light type="point" color="#00ffff" intensity="4" distance="5" decay="2"></a-light>
+            <a-gltf-model src="#diamond-model" 
+                          rotation="0 0 0" position="0 0.5 0" scale="1 1 1"
+                          animation="property: rotation; to: 0 360 0; dur: 8000; easing: linear; loop: true">
+            </a-gltf-model>
 
-            <a-icosahedron radius="1" detail="0"
-                material="shader: standard; color: #00ffff; wireframe: true; emissive: #00ffff; emissiveIntensity: 2"
-                animation="property: rotation; to: 0 360 0; dur: 10000; easing: linear; loop: true">
-            </a-icosahedron>
-
-            <a-icosahedron radius="0.95" detail="0"
-                material="shader: standard; color: #00ffff; opacity: 0.3; metalness: 0.5; roughness: 0; side: double"
-                animation="property: rotation; to: 360 0 0; dur: 15000; easing: linear; loop: true">
-            </a-icosahedron>
-
-            <a-ring radius-inner="1.4" radius-outer="1.45" color="#00ffff" rotation="90 0 0"
-                    material="shader: flat; opacity: 0.5; side: double"
-                    animation="property: rotation; to: 90 360 0; dur: 4000; easing: linear; loop: true">
-            </a-ring>
+            <a-torus radius="1.2" radius-tubular="0.01" color="#00ffff" rotation="45 0 0"
+                     material="emissive: #00ffff; emissiveIntensity: 2"
+                     animation="property: rotation; to: 45 360 0; dur: 5000; easing: linear; loop: true"></a-torus>
             
-             <a-ring radius-inner="1.6" radius-outer="1.62" color="#00ffff" rotation="45 0 0"
-                    material="shader: flat; opacity: 0.3; side: double"
-                    animation="property: rotation; to: 45 0 360; dur: 5000; easing: linear; loop: true">
-            </a-ring>
+            <a-ring radius-inner="1.4" radius-outer="1.42" color="#00ffff" rotation="-90 0 0" position="0 0.5 0"
+                    material="emissive: #00ffff; emissiveIntensity: 1"
+                    animation="property: scale; to: 1.1 1.1 1.1; dir: alternate; dur: 1000; loop: true"></a-ring>
+
+            <a-light type="point" color="#00ffff" intensity="2" distance="3" position="0 0 0"></a-light>
+            
+            <a-entity id="sparkles"></a-entity>
 
         </a-entity>
-
       </a-entity>
     </a-scene>
 
@@ -75,6 +76,24 @@
       const startBtn = document.getElementById('start-btn');
       const overlay = document.getElementById('overlay');
       startBtn.addEventListener('click', () => { overlay.classList.add('hidden'); });
+
+      // SCRIPT PARTIKEL (Biar ada bling-bling di sekitar berlian)
+      const sparkleContainer = document.getElementById('sparkles');
+      for(let i=0; i<15; i++) {
+        let el = document.createElement('a-circle');
+        let x = (Math.random() - 0.5) * 3;
+        let y = Math.random() * 2;
+        let z = (Math.random() - 0.5) * 3;
+        
+        el.setAttribute('position', `${x} ${y} ${z}`);
+        el.setAttribute('radius', '0.02');
+        el.setAttribute('color', '#ffffff');
+        el.setAttribute('material', 'shader: flat; opacity: 0.8');
+        // Animasi kedip
+        el.setAttribute('animation', `property: scale; to: 0 0 0; dir: alternate; dur: ${500+Math.random()*1000}; loop: true`);
+        
+        sparkleContainer.appendChild(el);
+      }
     </script>
   </body>
 </html>
