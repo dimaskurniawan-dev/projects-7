@@ -2,64 +2,46 @@
 <html lang="id">
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>REAL DIAMOND LITE</title>
+    <title>GHOST DIAMOND</title>
     
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
     
-    <script>
-      AFRAME.registerComponent('apply-lite-realism', {
-        init: function () {
-          const scene = this.el.sceneEl.object3D;
-          const loader = new THREE.TextureLoader();
-          
-          // PETA REFLEKSI BIRU BERSIH (Resolusi Rendah Biar Ringan)
-          // Menggunakan gambar langit biru cerah
-          const envTexture = loader.load('https://cdn.glitch.global/d2966571-3836-4109-9407-395a89601689/equirectangular_blue_sky_low.jpg?v=1664900957892');
-          envTexture.mapping = THREE.EquirectangularReflectionMapping;
-
-          this.el.addEventListener('model-loaded', () => {
-            const mesh = this.el.getObject3D('mesh');
-            mesh.traverse((node) => {
-              if (node.isMesh) {
-                // SETTINGAN KACA/BERLIAN
-                node.material.envMap = envTexture;
-                node.material.envMapIntensity = 2.5; // Pantulan kuat
-                node.material.metalness = 1.0;
-                node.material.roughness = 0.0;
-                
-                // PAKSA WARNA DASAR JADI PUTIH BERSIH (Biar gak hijau)
-                node.material.color.setHex(0xffffff); 
-                
-                // OPTIMALISASI PERFORMANCE
-                node.material.precision = 'mediump'; // Pakai presisi medium biar ringan
-                node.material.needsUpdate = true;
-              }
-            });
-          });
-        }
-      });
-    </script>
-
     <style>
       body { margin: 0; overflow: hidden; background: black; }
-      #overlay {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 999;
+      
+      /* TOMBOL SNAP (TOMBOL UTAMA) */
+      #snap-btn {
+        position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+        width: 70px; height: 70px;
+        background: white; border: 4px solid rgba(0,0,0,0.2);
+        border-radius: 50%; cursor: pointer; z-index: 1000;
+        box-shadow: 0 0 20px rgba(0,255,255,0.5);
       }
-      #start-btn { padding: 12px 30px; background: #00ffff; border: none; color: black; font-weight: bold; border-radius: 30px; cursor: pointer; }
-      .hidden { display: none !important; }
+      #snap-btn:active { transform: translateX(-50%) scale(0.9); background: #ccc; }
+
+      /* EFEK FLASH KAMERA */
+      #flash {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: white; opacity: 0; pointer-events: none; z-index: 9999;
+      }
+      .flash-anim { animation: flashEffect 0.2s ease-out; }
+      @keyframes flashEffect { 
+        0% { opacity: 0.8; } 
+        100% { opacity: 0; } 
+      }
     </style>
   </head>
   
   <body>
-    <div id="overlay">
-      <button id="start-btn">LIHAT BERLIAN</button>
-    </div>
+    <div id="flash"></div>
+
+    <button id="snap-btn"></button>
 
     <a-scene mindar-image="imageTargetSrc: ./targets/bunga.mind;" 
              color-space="sRGB" 
-             renderer="colorManagement: true; physicallyCorrectLights: true; precision: mediump;"
+             renderer="colorManagement: true; physicallyCorrectLights: true; preserveDrawingBuffer: true;"
+             screenshot="width: 1080; height: 1920"
              vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
       
       <a-assets>
@@ -68,21 +50,20 @@
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      <a-light type="ambient" intensity="0.8"></a-light>
-      <a-light type="directional" position="3 5 2" intensity="3" color="#ffffff"></a-light>
-      <a-light type="point" position="-2 2 4" intensity="2" color="#00ffff" distance="10"></a-light>
+      <a-light type="ambient" intensity="1"></a-light>
+      <a-light type="directional" position="2 4 2" intensity="3" color="white"></a-light>
 
       <a-entity id="ar-target" mindar-image-target="targetIndex: 0">
         
-        <a-entity position="0 0 0" scale="0.5 0.5 0.5">
+        <a-entity id="ghost-group" visible="false" position="0 0 0" scale="0.5 0.5 0.5">
             
             <a-gltf-model src="#diamond-model" 
-                          apply-lite-realism 
                           rotation="0 0 0"
-                          animation="property: rotation; to: 0 360 0; dur: 12000; easing: linear; loop: true">
+                          animation="property: rotation; to: 0 360 0; dur: 8000; easing: linear; loop: true">
             </a-gltf-model>
 
-            <a-entity id="sparkles-container"></a-entity>
+            <a-ring radius-inner="1.4" radius-outer="1.45" color="#00ffff" rotation="90 0 0"
+                    material="emissive: #00ffff; emissiveIntensity: 2"></a-ring>
 
         </a-entity>
 
@@ -90,38 +71,33 @@
     </a-scene>
 
     <script>
-      const startBtn = document.getElementById('start-btn');
-      const overlay = document.getElementById('overlay');
-      startBtn.addEventListener('click', () => { overlay.classList.add('hidden'); });
+      const snapBtn = document.getElementById('snap-btn');
+      const ghostGroup = document.getElementById('ghost-group');
+      const flashDiv = document.getElementById('flash');
+      const scene = document.querySelector('a-scene');
 
-      // --- SCRIPT 2: GENERATOR KILAUAN (THE BLING EFFECT) ---
-      const container = document.getElementById('sparkles-container');
-      // Bikin 20 partikel kilauan
-      for (let i = 0; i < 20; i++) {
-        let sparkle = document.createElement('a-image');
-        // Pakai gambar "flare" kecil (bintang)
-        sparkle.setAttribute('src', 'https://cdn.glitch.global/d2966571-3836-4109-9407-395a89601689/lensflare0.png?v=1664901625432');
+      // FUNGSI SAKTI: MUNCUL -> FOTO -> ILANG
+      snapBtn.addEventListener('click', () => {
         
-        // Posisi acak di sekitar berlian
-        let x = (Math.random() - 0.5) * 2.5;
-        let y = (Math.random() - 0.5) * 2.5 + 0.5;
-        let z = (Math.random() - 0.5) * 2.5;
-        sparkle.setAttribute('position', `${x} ${y} ${z}`);
-        
-        // Skala acak kecil
-        let s = 0.1 + Math.random() * 0.2;
-        sparkle.setAttribute('scale', `${s} ${s} ${s}`);
+        // 1. Munculin Hantu
+        ghostGroup.setAttribute('visible', 'true');
 
-        // Agar menyala (tanpa terpengaruh lampu) dan transparan
-        sparkle.setAttribute('material', 'shader: flat; transparent: true; opacity: 0.8; blending: additive; color: #00ffff');
-        
-        // Animasi Kedap-Kedip (Fade In Out)
-        let durasi = 1000 + Math.random() * 2000;
-        let delay = Math.random() * 2000;
-        sparkle.setAttribute('animation', `property: material.opacity; from: 0; to: 1; dir: alternate; dur: ${durasi}; delay: ${delay}; loop: true; easing: easeInOutSine`);
-        
-        container.appendChild(sparkle);
-      }
+        // 2. Efek Flash (Biar mata user silau dikit & gak sadar modelnya muncul)
+        flashDiv.classList.add('flash-anim');
+        setTimeout(() => flashDiv.classList.remove('flash-anim'), 500);
+
+        // 3. Tunggu frame render sebentar (50ms) lalu CEKREK
+        setTimeout(() => {
+            // Ambil Screenshot (Download Otomatis)
+            scene.components.screenshot.capture('perspective');
+            
+            // 4. Umpetin lagi LANGSUNG!
+            // Kita kasih delay dikit banget biar kebawa di foto, tapi mata gak sempet fokus
+            setTimeout(() => {
+                ghostGroup.setAttribute('visible', 'false');
+            }, 100); 
+        }, 50);
+      });
     </script>
   </body>
 </html>
