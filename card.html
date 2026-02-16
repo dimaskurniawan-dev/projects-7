@@ -2,7 +2,7 @@
 <html lang="id">
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>DIMAS KURNIAWAN - AR CARD</title>
+    <title>DIMAS KURNIAWAN - PREMIUM AR</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,11 +14,11 @@
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
     
     <style>
-      /* RESET & FONT GLOBAL */
+      /* RESET & GLOBAL SETTINGS */
       * { box-sizing: border-box; }
       body { margin: 0; overflow: hidden; font-family: 'Plus Jakarta Sans', sans-serif; }
       
-      /* --- LAYAR PEMBUKA (SPLASH SCREEN) --- */
+      /* --- LOADING SCREEN --- */
       #overlay {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: radial-gradient(circle at center, #1a1a2e 0%, #000000 100%);
@@ -26,8 +26,8 @@
         transition: opacity 0.5s ease-out;
       }
       
-      .loader-text {
-        color: white; font-weight: 800; font-size: 24px; letter-spacing: 2px;
+      .brand-title {
+        color: white; font-weight: 800; font-size: 28px; letter-spacing: 1px;
         margin-bottom: 5px; text-transform: uppercase;
         background: linear-gradient(90deg, #00f2ea, #ff0050);
         -webkit-background-clip: text; -webkit-text-fill-color: transparent;
@@ -35,110 +35,87 @@
       
       #start-btn {
         margin-top: 30px; padding: 16px 40px; 
-        background: rgba(255, 255, 255, 0.1); 
-        color: #00f2ea; border: 1px solid #00f2ea;
-        border-radius: 50px; font-weight: 700; font-size: 14px;
+        background: rgba(255, 255, 255, 0.05); 
+        color: #00f2ea; border: 1px solid rgba(0, 242, 234, 0.5);
+        border-radius: 50px; font-weight: 700; font-size: 14px; letter-spacing: 1px;
         cursor: pointer; transition: all 0.3s;
-        box-shadow: 0 0 15px rgba(0, 242, 234, 0.2);
+        box-shadow: 0 0 20px rgba(0, 242, 234, 0.2);
         font-family: 'Plus Jakarta Sans', sans-serif;
       }
-      #start-btn:hover { background: #00f2ea; color: black; box-shadow: 0 0 30px rgba(0, 242, 234, 0.6); }
+      #start-btn:hover { background: #00f2ea; color: black; box-shadow: 0 0 40px rgba(0, 242, 234, 0.6); }
 
       /* --- HUD MENU MEWAH (GLASSMORPHISM) --- */
       #hud-container {
         position: fixed; bottom: 0; left: 0; width: 100%;
-        padding: 20px 20px 40px 20px;
+        padding: 25px 20px 40px 20px;
         display: flex; flex-direction: column; align-items: center;
         z-index: 1000;
-        
-        /* Efek Kaca Buram Dark Mode */
-        background: rgba(10, 10, 10, 0.75);
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 24px 24px 0 0;
-        box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
-        
-        /* Animasi Slide Up */
+        background: rgba(15, 15, 15, 0.85);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 30px 30px 0 0;
+        box-shadow: 0 -10px 50px rgba(0,0,0,0.8);
         transform: translateY(120%);
-        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
       }
-
-      /* Kalau target ketemu, tambah class ini biar muncul */
       #hud-container.active { transform: translateY(0); }
 
-      .profile-header {
-        display: flex; align-items: center; width: 100%; margin-bottom: 20px;
-        border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;
+      .profile-info {
+        display: flex; align-items: center; width: 100%; margin-bottom: 25px;
+        border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px;
       }
-      
-      .avatar-small {
-        width: 50px; height: 50px; border-radius: 50%; 
+      .avatar {
+        width: 55px; height: 55px; border-radius: 50%; 
         background-image: url('https://cdn.glitch.global/d2966571-3836-4109-9407-395a89601689/profile_placeholder.png?v=1664899253450');
         background-size: cover; border: 2px solid #00f2ea; margin-right: 15px;
+        box-shadow: 0 0 15px rgba(0, 242, 234, 0.3);
       }
-      
-      .info-text h3 { margin: 0; color: white; font-weight: 800; font-size: 18px; }
-      .info-text p { margin: 0; color: #aaa; font-size: 12px; font-weight: 600; }
+      .text-details h3 { margin: 0; color: white; font-weight: 800; font-size: 20px; letter-spacing: 0.5px; }
+      .text-details p { margin: 4px 0 0 0; color: #aaa; font-size: 13px; font-weight: 600; }
 
-      /* Tombol-tombol Keren */
-      .action-grid {
-        display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%;
-      }
+      .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
       
-      .btn-glass {
+      .glass-btn {
         display: flex; align-items: center; justify-content: center; gap: 10px;
-        padding: 14px; border-radius: 12px;
-        text-decoration: none; color: white; font-weight: 600; font-size: 14px;
+        padding: 16px; border-radius: 16px;
+        text-decoration: none; color: white; font-weight: 700; font-size: 14px;
         transition: 0.2s; border: 1px solid rgba(255,255,255,0.05);
       }
-      
-      /* Warna Spesifik per Tombol */
-      .btn-wa { background: linear-gradient(135deg, rgba(37, 211, 102, 0.2), rgba(37, 211, 102, 0.05)); }
-      .btn-wa:active { background: rgba(37, 211, 102, 0.4); transform: scale(0.98); }
-      .btn-wa i { color: #25D366; font-size: 18px; }
-
-      .btn-ig { background: linear-gradient(135deg, rgba(193, 53, 132, 0.2), rgba(193, 53, 132, 0.05)); }
-      .btn-ig:active { background: rgba(193, 53, 132, 0.4); transform: scale(0.98); }
-      .btn-ig i { color: #E1306C; font-size: 18px; }
-
-      .btn-web { 
-        grid-column: span 2; /* Full width */
+      .wa { background: linear-gradient(135deg, rgba(37, 211, 102, 0.2), rgba(37, 211, 102, 0.05)); border-color: rgba(37, 211, 102, 0.3); }
+      .wa i { color: #25D366; font-size: 18px; }
+      .ig { background: linear-gradient(135deg, rgba(225, 48, 108, 0.2), rgba(225, 48, 108, 0.05)); border-color: rgba(225, 48, 108, 0.3); }
+      .ig i { color: #E1306C; font-size: 18px; }
+      .web { 
+        grid-column: span 2; 
         background: linear-gradient(135deg, rgba(0, 242, 234, 0.2), rgba(0, 119, 181, 0.1));
-        border: 1px solid rgba(0, 242, 234, 0.3);
+        border-color: rgba(0, 242, 234, 0.3);
       }
-      .btn-web:active { opacity: 0.8; transform: scale(0.98); }
-      .btn-web i { color: #00f2ea; }
-
+      .web i { color: #00f2ea; font-size: 18px; }
+      .glass-btn:active { transform: scale(0.97); opacity: 0.8; }
       .hidden { display: none !important; }
     </style>
   </head>
   
   <body>
     <div id="overlay">
-      <div class="loader-text">DIMAS KURNIAWAN</div>
-      <p style="color: #666; font-size: 12px; letter-spacing: 3px;">AUGMENTED REALITY PORTFOLIO</p>
-      <button id="start-btn">ACTIVATE SYSTEM</button>
+      <div class="brand-title">DIMAS KURNIAWAN</div>
+      <p style="color: #888; font-size: 12px; letter-spacing: 4px; font-weight: 600;">AUGMENTED REALITY SYSTEM</p>
+      <button id="start-btn">INITIALIZE</button>
     </div>
 
     <div id="hud-container">
-      <div class="profile-header">
-        <div class="avatar-small"></div> <div class="info-text">
+      <div class="profile-info">
+        <div class="avatar"></div>
+        <div class="text-details">
           <h3>Dimas Kurniawan</h3>
-          <p>Creative Developer & AR Creator</p>
+          <p>CEO & Founder GP69</p>
         </div>
       </div>
-      
-      <div class="action-grid">
-        <a href="https://wa.me/6281234567890" target="_blank" class="btn-glass btn-wa">
-          <i class="fab fa-whatsapp"></i> WhatsApp
-        </a>
-        <a href="https://instagram.com/dimaskurniawan" target="_blank" class="btn-glass btn-ig">
-          <i class="fab fa-instagram"></i> Instagram
-        </a>
-        <a href="https://gp69.xyz" target="_blank" class="btn-glass btn-web">
-          <i class="fas fa-globe"></i> Buka Website Portfolio
-        </a>
+      <div class="btn-grid">
+        <a href="https://wa.me/6281234567890" target="_blank" class="glass-btn wa"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+        <a href="https://instagram.com/dimaskurniawan" target="_blank" class="glass-btn ig"><i class="fab fa-instagram"></i> Instagram</a>
+        <a href="https://gp69.xyz" target="_blank" class="glass-btn web"><i class="fas fa-globe"></i> Buka Website</a>
       </div>
     </div>
 
@@ -153,21 +130,21 @@
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
       <a-entity id="ar-target" mindar-image-target="targetIndex: 0">
-        
         <a-entity position="0 0 0" scale="0.5 0.5 0.5">
             
-            <a-circle src="#profile-img" radius="0.6" position="0 0.8 0" opacity="0.9"></a-circle>
+            <a-circle src="#profile-img" radius="0.6" position="0 0.9 0" opacity="0.9"></a-circle>
             
-            <a-ring radius-inner="0.65" radius-outer="0.68" color="#00f2ea" position="0 0.8 0"
-                    animation="property: rotation; to: 0 0 -360; dur: 6000; easing: linear; loop: true"></a-ring>
-            <a-ring radius-inner="0.75" radius-outer="0.76" color="#ff0050" position="0 0.8 0"
-                    animation="property: scale; to: 1.1 1.1 1.1; dir: alternate; dur: 1000; loop: true"></a-ring>
+            <a-ring radius-inner="0.65" radius-outer="0.68" color="#00f2ea" position="0 0.9 0"
+                    animation="property: rotation; to: 0 0 -360; dur: 8000; easing: linear; loop: true"></a-ring>
+            <a-ring radius-inner="0.75" radius-outer="0.77" color="#ff0050" position="0 0.9 0"
+                    animation="property: scale; to: 1.05 1.05 1.05; dir: alternate; dur: 1500; loop: true"></a-ring>
 
-            <a-text value="DIMAS KURNIAWAN" color="white" align="center" position="0 -0.1 0" width="8"
-                    font="https://cdn.aframe.io/fonts/Exo2Bold.fnt" shader="msdf"></a-text>
+            <a-text value="DIMAS KURNIAWAN" color="white" align="center" position="0 0 0" width="8" font="roboto"></a-text>
+            <a-text value="CEO & FOUNDER GP69" color="#00f2ea" align="center" position="0 -0.3 0" width="4" font="roboto"></a-text>
             
-            <a-plane color="#000" opacity="0.6" width="2" height="0.4" position="0 -0.5 0"></a-plane>
-            <a-text value="SYSTEM ONLINE // TAP MENU BELOW" color="#00f2ea" align="center" position="0 -0.5 0" width="3"></a-text>
+            <a-entity position="0 -0.8 0" animation="property: position; to: 0 -1.0 0; dir: alternate; dur: 1000; loop: true">
+                 <a-text value="v MENU DI BAWAH v" align="center" width="3" color="#aaa" font="roboto"></a-text>
+            </a-entity>
 
         </a-entity>
       </a-entity>
@@ -179,22 +156,19 @@
       const hudContainer = document.getElementById('hud-container');
       const arTarget = document.getElementById('ar-target');
 
-      // 1. Masuk AR
       startBtn.addEventListener('click', () => {
         overlay.style.opacity = '0';
         setTimeout(() => { overlay.classList.add('hidden'); }, 500);
       });
 
-      // 2. Logika Target Found (Slide Up Menu)
       arTarget.addEventListener("mindar-image-targetFound", () => {
-        console.log("Target Bunga Ditemukan!");
-        hudContainer.classList.add('active'); // Memicu animasi CSS slide-up
+        console.log("Target Ketemu!");
+        hudContainer.classList.add('active'); 
       });
 
-      // 3. Logika Target Lost (Slide Down Menu)
       arTarget.addEventListener("mindar-image-targetLost", () => {
         console.log("Target Hilang!");
-        hudContainer.classList.remove('active'); // Menu turun lagi
+        hudContainer.classList.remove('active');
       });
     </script>
   </body>
