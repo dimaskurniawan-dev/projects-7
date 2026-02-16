@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>GP69 MOTIVATION NODE - PRO</title>
+    
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.0.0/dist/aframe-extras.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@800&display=swap" rel="stylesheet">
+
+    <style>
+      body { margin: 0; overflow: hidden; font-family: 'Plus Jakarta Sans', sans-serif; }
+      
+      /* UI OVERLAY PREMIUM */
+      #overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: linear-gradient(45deg, #000000, #1a0a1a);
+        z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center;
+      }
+      
+      #start-btn {
+        padding: 15px 40px; font-size: 20px; font-weight: 800;
+        background: transparent; color: #00ffff;
+        border: 3px solid #00ffff; border-radius: 0px; /* Kotak biar cyber */
+        cursor: pointer; box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+        text-transform: uppercase; letter-spacing: 2px;
+        transition: 0.3s;
+      }
+      #start-btn:hover { background: #00ffff; color: black; box-shadow: 0 0 40px rgba(0, 255, 255, 0.8); }
+      .hidden { display: none !important; }
+    </style>
+  </head>
+  
+  <body>
+    <div id="overlay">
+      <h1 style="color: white; text-transform: uppercase; font-weight: 800;">Neural Link Ready</h1>
+      <p style="color: #00ffff; margin-bottom: 30px;">[ INJECTING MOTIVATION DATA ]</p>
+      <button id="start-btn">INITIALIZE</button>
+    </div>
+
+    <a-scene mindar-image="imageTargetSrc: ./targets/targets.mind;" 
+             renderer="colorManagement: true; physicallyCorrectLights: true; antialias: true; highRefreshRate: true" 
+             vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+      
+      <a-assets>
+        <audio id="sound-inspire" src="./assets/audio/halo.mp3" preload="auto"></audio>
+        <img id="env-map" src="https://cdn.glitch.global/d2966571-3836-4109-9407-395a89601689/equirectangular_cyber.jpg?v=1664899253450" crossorigin="anonymous">
+      </a-assets>
+
+      <a-light type="ambient" intensity="0.2"></a-light>
+      <a-light type="point" position="-2 3 2" intensity="2" color="#00ffff" distance="10"></a-light>
+      <a-light type="point" position="2 3 2" intensity="2" color="#ff00ff" distance="10"></a-light>
+
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+      <a-entity id="ar-target" mindar-image-target="targetIndex: 0">
+        
+        <a-entity position="0 -0.2 0" scale="0.35 0.35 0.35">
+            
+            <a-torus-knot radius="2.5" radius-tubular="0.03" p="2" q="3"
+                          material="shader: standard; color: #00ffff; emissive: #00ffff; emissiveIntensity: 2; metalness: 0.8; roughness: 0.1; envMap: #env-map"
+                          animation="property: rotation; to: 0 360 0; dur: 15000; easing: linear; loop: true">
+            </a-torus-knot>
+            <a-ring radius-inner="2.3" radius-outer="2.35" color="#ff00ff"
+                    material="emissive: #ff00ff; emissiveIntensity: 1"
+                    animation="property: scale; to: 1.05 1.05 1.05; dir: alternate; dur: 1000; loop: true"></a-ring>
+
+            <a-text value="JANGAN\nMENYERAH!" 
+                    align="center" position="0 0.5 0.2" width="12" font="kelsonsans" fontWeight="bold"
+                    material="shader: standard; color: #ffffff; emissive: #00ffff; emissiveIntensity: 0.5; metalness: 1; roughness: 0; envMap: #env-map"
+                    animation="property: position; to: 0 0.7 0.2; dir: alternate; dur: 2000; easing: easeInOutSine; loop: true">
+            </a-text>
+            <a-text value="JANGAN\nMENYERAH!" 
+                    align="center" position="0 0.5 0.1" width="12" font="kelsonsans" fontWeight="bold"
+                    material="shader: flat; color: #00ffff; opacity: 0.3; transparent: true"
+                    animation="property: scale; to: 1.1 1.1 1.1; dir: alternate; dur: 1000; loop: true">
+            </a-text>
+
+            <a-text value="PROSESMU ADALAH PROGRESMU" align="center" position="0 -0.5 0.2" width="6" font="kelsonsans" color="#ff00ff"></a-text>
+            
+            <a-plane width="3" height="0.5" position="0 -1.5 0.2" color="#000" opacity="0.8">
+                <a-text value="GP69.XYZ // MODE PRO" align="center" width="4" color="#00ffff"></a-text>
+            </a-plane>
+
+            <a-entity id="data-stream-container"></a-entity>
+
+        </a-entity>
+
+      </a-entity>
+    </a-scene>
+
+    <script>
+      const startBtn = document.getElementById('start-btn');
+      const overlay = document.getElementById('overlay');
+      const arTarget = document.getElementById('ar-target');
+      const audio = document.getElementById('sound-inspire');
+
+      startBtn.addEventListener('click', () => {
+        overlay.classList.add('hidden');
+        audio.play().then(() => { audio.pause(); audio.currentTime = 0; });
+      });
+      arTarget.addEventListener("mindar-image-targetFound", () => { audio.play(); });
+      arTarget.addEventListener("mindar-image-targetLost", () => { audio.pause(); audio.currentTime = 0; });
+
+      // SCRIPT GENERATOR PARTIKEL "DATA RAIN"
+      const container = document.querySelector('#data-stream-container');
+      for (let i = 0; i < 40; i++) {
+        let dataLine = document.createElement('a-box');
+        let x = (Math.random() - 0.5) * 5;
+        let z = (Math.random() - 0.5) * 2;
+        let height = 0.2 + Math.random() * 0.5;
+        let speed = 2000 + Math.random() * 3000;
+        let color = Math.random() > 0.5 ? '#00ffff' : '#ff00ff';
+
+        dataLine.setAttribute('position', `${x} -3 ${z}`);
+        dataLine.setAttribute('width', '0.02');
+        dataLine.setAttribute('depth', '0.02');
+        dataLine.setAttribute('height', height);
+        dataLine.setAttribute('color', color);
+        // Material Reflective juga biar gacor
+        dataLine.setAttribute('material', `shader: standard; emissive: ${color}; emissiveIntensity: 1; metalness: 0.9; roughness: 0.1; envMap: #env-map`);
+        
+        // Animasi Naik ke atas kayak data upload
+        dataLine.setAttribute('animation', `property: position; to: ${x} 3 ${z}; dur: ${speed}; easing: linear; loop: true`);
+        container.appendChild(dataLine);
+      }
+    </script>
+  </body>
+</html>
