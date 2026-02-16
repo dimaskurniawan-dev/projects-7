@@ -7,16 +7,44 @@
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
     
+    <script>
+      // Komponen pembuka link (Universal)
+      AFRAME.registerComponent('buka-link', {
+        schema: {
+          url: {type: 'string', default: ''}
+        },
+        init: function () {
+          var data = this.data;
+          var el = this.el;
+
+          // Saat diklik/disentuh
+          el.addEventListener('click', function () {
+            console.log("Tombol diklik: " + data.url);
+            
+            // Animasi visual biar user tau tombol kepencet (Scale down dikit)
+            el.setAttribute('scale', '0.9 0.9 0.9');
+            setTimeout(() => { el.setAttribute('scale', '1 1 1'); }, 200);
+
+            // Buka Link (Jeda dikit biar animasi jalan dulu)
+            setTimeout(() => {
+                window.location.href = data.url;
+            }, 300);
+          });
+        }
+      });
+    </script>
+
     <style>
       body { margin: 0; overflow: hidden; font-family: sans-serif; }
       #overlay {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(0,0,0,0.8); z-index: 999;
-        display: flex; justify-content: center; align-items: center; flexDirection: column;
+        display: flex; flex-direction: column; justify-content: center; align-items: center;
       }
       #start-btn {
         padding: 15px 30px; background: #00ffff; color: black; font-weight: bold;
         border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;
+        z-index: 1000; /* Pastikan tombol start di atas segalanya */
       }
       .hidden { display: none !important; }
     </style>
@@ -49,17 +77,23 @@
             <a-text value="CEO GP69" color="#00ffff" align="center" position="0 -0.1 0" width="5"></a-text>
 
             <a-entity position="-0.8 -0.8 0.1">
-                <a-plane id="btn-wa-klik" class="clickable" color="#25D366" width="1.5" height="0.5" opacity="1"></a-plane>
+                <a-plane class="clickable" color="#25D366" width="1.5" height="0.5"
+                         buka-link="url: https://wa.me/6281234567890">
+                </a-plane>
                 <a-text value="WHATSAPP" align="center" position="0 0 0.05" width="4" color="white"></a-text>
             </a-entity>
 
             <a-entity position="0.8 -0.8 0.1">
-                <a-plane id="btn-ig-klik" class="clickable" color="#C13584" width="1.5" height="0.5" opacity="1"></a-plane>
+                <a-plane class="clickable" color="#C13584" width="1.5" height="0.5"
+                         buka-link="url: https://instagram.com/usernameabang">
+                </a-plane>
                 <a-text value="INSTAGRAM" align="center" position="0 0 0.05" width="4" color="white"></a-text>
             </a-entity>
 
             <a-entity position="0 -1.5 0.1">
-                <a-plane id="btn-web-klik" class="clickable" color="#0077b5" width="3.1" height="0.5" opacity="1"></a-plane>
+                <a-plane class="clickable" color="#0077b5" width="3.1" height="0.5"
+                         buka-link="url: https://gp69.xyz">
+                </a-plane>
                 <a-text value="BUKA WEBSITE" align="center" position="0 0 0.05" width="4" color="white"></a-text>
             </a-entity>
 
@@ -70,29 +104,8 @@
     <script>
       const startBtn = document.getElementById('start-btn');
       const overlay = document.getElementById('overlay');
-      startBtn.addEventListener('click', () => { overlay.classList.add('hidden'); });
-
-      // --- LOGIC KLIK BARU (LANGSUNG TEMBAK ID PLANE) ---
-
-      // 1. KLIK WA
-      document.querySelector('#btn-wa-klik').addEventListener("click", function (evt) {
-        console.log("WA KEKLIK!");
-        // Ganti nomor di sini
-        window.location.href = "https://wa.me/6281234567890"; 
-      });
-
-      // 2. KLIK IG
-      document.querySelector('#btn-ig-klik').addEventListener("click", function (evt) {
-        console.log("IG KEKLIK!");
-        // Ganti username
-        window.location.href = "https://instagram.com/usernameabang"; 
-      });
-
-      // 3. KLIK WEB
-      document.querySelector('#btn-web-klik').addEventListener("click", function (evt) {
-        console.log("WEB KEKLIK!");
-        // Ganti web
-        window.location.href = "https://gp69.xyz"; 
+      startBtn.addEventListener('click', () => {
+        overlay.classList.add('hidden');
       });
     </script>
   </body>
