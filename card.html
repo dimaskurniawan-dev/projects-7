@@ -2,44 +2,45 @@
 <html lang="id">
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Kartu Nama AR - Dimas</title>
+    <title>DIMAS KURNIAWAN - KING CARD</title>
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
     
     <style>
-      body { margin: 0; overflow: hidden; font-family: sans-serif; }
+      body { margin: 0; overflow: hidden; font-family: 'Plus Jakarta Sans', sans-serif; }
       
-      /* --- MENU TOMBOL BAWAH (HTML BIASA - PASTI BISA DIKLIK) --- */
-      #hud-menu {
-        position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-        width: 90%; max-width: 400px;
-        display: none; /* Sembunyi dulu */
-        flex-direction: column; gap: 10px;
-        z-index: 1000;
+      /* --- HUD MENU BAWAH (Tetap Ada Karena Gacor) --- */
+      #hud-container {
+        position: fixed; bottom: 0; left: 0; width: 100%;
+        padding: 20px; z-index: 1000;
+        display: flex; flex-direction: column; gap: 10px;
+        background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+        transform: translateY(120%); transition: transform 0.5s;
       }
+      #hud-container.active { transform: translateY(0); }
 
-      .btn {
-        display: block; text-align: center;
-        padding: 12px; border-radius: 8px;
-        color: white; font-weight: bold; text-decoration: none;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      .btn-gold {
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+        padding: 15px; border-radius: 10px;
+        background: rgba(0, 0, 0, 0.8); border: 1px solid #FFD700;
+        color: #FFD700; text-decoration: none; font-weight: bold;
+        box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
       }
       
-      /* Warna Tombol Standar */
-      .btn-wa { background-color: #25D366; }
-      .btn-ig { background-color: #E1306C; }
-      .btn-web { background-color: #0077b5; }
-
-      /* Layar Start */
+      /* TOMBOL START */
       #overlay {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: black; z-index: 9999;
-        display: flex; justify-content: center; align-items: center;
+        background: #000; z-index: 9999;
+        display: flex; flex-direction: column; justify-content: center; align-items: center;
       }
       #start-btn {
-        padding: 15px 30px; background: white; color: black; font-weight: bold;
-        border: none; border-radius: 5px; cursor: pointer;
+        padding: 15px 40px; background: #FFD700; color: #000; font-weight: 900;
+        border: none; border-radius: 5px; cursor: pointer; letter-spacing: 2px;
       }
       .hidden { display: none !important; }
     </style>
@@ -47,13 +48,17 @@
   
   <body>
     <div id="overlay">
-      <button id="start-btn">MULAI SCAN</button>
+      <h1 style="color: #FFD700; margin-bottom: 10px;">KING ACCESS</h1>
+      <button id="start-btn">BUKA KARTU</button>
     </div>
 
-    <div id="hud-menu">
-      <a href="https://wa.me/6281234567890" target="_blank" class="btn btn-wa">WHATSAPP</a>
-      <a href="https://instagram.com/dimaskurniawan" target="_blank" class="btn btn-ig">INSTAGRAM</a>
-      <a href="https://gp69.xyz" target="_blank" class="btn btn-web">WEBSITE</a>
+    <div id="hud-container">
+      <a href="https://wa.me/6281234567890" target="_blank" class="btn-gold">
+        <i class="fab fa-whatsapp"></i> HUBUNGI SAYA
+      </a>
+      <a href="https://instagram.com/dimaskurniawan" target="_blank" class="btn-gold">
+        <i class="fab fa-instagram"></i> INSTAGRAM
+      </a>
     </div>
 
     <a-scene mindar-image="imageTargetSrc: ./targets/bunga.mind;" 
@@ -68,17 +73,26 @@
 
       <a-entity id="ar-target" mindar-image-target="targetIndex: 0">
         
-        <a-entity position="0 0 0" scale="0.5 0.5 0.5">
+        <a-entity position="0 0 0" scale="0.55 0.55 0.55">
             
-            <a-plane color="#111111" width="2" height="3" position="0 0 0" opacity="0.9"></a-plane>
-            
-            <a-circle src="#profile-img" radius="0.6" position="0 0.6 0.1"></a-circle>
-            <a-ring color="white" radius-inner="0.6" radius-outer="0.65" position="0 0.6 0.1"></a-ring>
+            <a-plane color="#0a0a0a" width="2" height="3" position="0 0.2 0" opacity="0.95"></a-plane>
+            <a-plane color="#FFD700" width="2.1" height="3.1" position="0 0.2 -0.01"></a-plane>
 
-            <a-text value="DIMAS KURNIAWAN" align="center" position="0 -0.4 0.1" width="6" color="white"></a-text>
-            <a-text value="CEO GP69" align="center" position="0 -0.7 0.1" width="4" color="#00ffff"></a-text>
+            <a-triangle color="#FFD700" vertex-a="0 0.5 0" vertex-b="-0.2 -0.2 0" vertex-c="0.2 -0.2 0" position="0 1.3 0.1"></a-triangle>
+            <a-triangle color="#FFD700" vertex-a="0 0.4 0" vertex-b="-0.2 -0.2 0" vertex-c="0.2 -0.2 0" position="-0.25 1.25 0.1" rotation="0 0 -20"></a-triangle>
+            <a-triangle color="#FFD700" vertex-a="0 0.4 0" vertex-b="-0.2 -0.2 0" vertex-c="0.2 -0.2 0" position="0.25 1.25 0.1" rotation="0 0 20"></a-triangle>
 
-            <a-text value="(KLIK TOMBOL DI BAWAH)" align="center" position="0 -1.2 0.1" width="3" color="#aaaaaa"></a-text>
+            <a-circle src="#profile-img" radius="0.6" position="0 0.5 0.1"></a-circle>
+            <a-ring color="#FFD700" radius-inner="0.6" radius-outer="0.65" position="0 0.5 0.1"></a-ring>
+
+            <a-text value="DIMAS KURNIAWAN" align="center" position="0 -0.4 0.1" width="6" 
+                    color="#FFD700" font="roboto" negate="false"></a-text>
+            <a-plane color="#FFD700" width="1.5" height="0.02" position="0 -0.6 0.1"></a-plane>
+            <a-text value="CEO & FOUNDER GP69" align="center" position="0 -0.8 0.1" width="4" 
+                    color="#FFFFFF" font="roboto" negate="false"></a-text>
+
+            <a-plane color="#FFD700" width="0.1" height="0.1" position="-0.8 -0.4 0.1" rotation="0 0 45"></a-plane>
+            <a-plane color="#FFD700" width="0.1" height="0.1" position="0.8 -0.4 0.1" rotation="0 0 45"></a-plane>
 
         </a-entity>
       </a-entity>
@@ -87,21 +101,19 @@
     <script>
       const startBtn = document.getElementById('start-btn');
       const overlay = document.getElementById('overlay');
-      const hudMenu = document.getElementById('hud-menu');
+      const hudContainer = document.getElementById('hud-container');
       const arTarget = document.getElementById('ar-target');
 
       startBtn.addEventListener('click', () => {
         overlay.classList.add('hidden');
       });
 
-      // Target Ketemu = Muncul Tombol
+      // Menu Muncul Pas Target Ketemu
       arTarget.addEventListener("mindar-image-targetFound", () => {
-        hudMenu.style.display = 'flex';
+        hudContainer.classList.add('active');
       });
-
-      // Target Hilang = Tombol Hilang
       arTarget.addEventListener("mindar-image-targetLost", () => {
-        hudMenu.style.display = 'none';
+        hudContainer.classList.remove('active');
       });
     </script>
   </body>
