@@ -2,66 +2,120 @@
 <html lang="id">
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>DIMAS KURNIAWAN - KING CARD</title>
+    <title>DIMAS KURNIAWAN - AR CARD</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
     
     <style>
+      /* RESET & GLOBAL */
+      * { box-sizing: border-box; }
       body { margin: 0; overflow: hidden; font-family: 'Plus Jakarta Sans', sans-serif; }
       
-      /* --- HUD MENU BAWAH (Tetap Ada Karena Gacor) --- */
-      #hud-container {
-        position: fixed; bottom: 0; left: 0; width: 100%;
-        padding: 20px; z-index: 1000;
-        display: flex; flex-direction: column; gap: 10px;
-        background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-        transform: translateY(120%); transition: transform 0.5s;
-      }
-      #hud-container.active { transform: translateY(0); }
-
-      .btn-gold {
-        display: flex; align-items: center; justify-content: center; gap: 10px;
-        padding: 15px; border-radius: 10px;
-        background: rgba(0, 0, 0, 0.8); border: 1px solid #FFD700;
-        color: #FFD700; text-decoration: none; font-weight: bold;
-        box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
-      }
-      
-      /* TOMBOL START */
+      /* 1. LAYAR PEMBUKA (Loading Screen Mewah) */
       #overlay {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: #000; z-index: 9999;
-        display: flex; flex-direction: column; justify-content: center; align-items: center;
+        background: radial-gradient(circle at center, #1a1a2e 0%, #000000 100%);
+        z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center;
       }
+      
+      .brand-title {
+        color: white; font-weight: 800; font-size: 24px; letter-spacing: 2px;
+        margin-bottom: 10px; text-transform: uppercase;
+        background: linear-gradient(90deg, #00f2ea, #ff0050);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      }
+
       #start-btn {
-        padding: 15px 40px; background: #FFD700; color: #000; font-weight: 900;
-        border: none; border-radius: 5px; cursor: pointer; letter-spacing: 2px;
+        padding: 15px 40px; 
+        background: rgba(255, 255, 255, 0.1); 
+        color: #00f2ea; border: 1px solid #00f2ea;
+        border-radius: 50px; font-weight: 700; font-size: 14px; letter-spacing: 1px;
+        cursor: pointer; transition: all 0.3s;
+        box-shadow: 0 0 20px rgba(0, 242, 234, 0.2);
+        font-family: 'Plus Jakarta Sans', sans-serif;
       }
+      #start-btn:hover { background: #00f2ea; color: black; box-shadow: 0 0 40px rgba(0, 242, 234, 0.6); }
+
+      /* 2. MENU HUD (LOGIKA TETAP, TAMPILAN UPGRADE) */
+      #hud-menu {
+        position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+        width: 90%; max-width: 400px;
+        display: none; /* Logic: Hidden by default */
+        flex-direction: column; gap: 12px;
+        z-index: 1000;
+        
+        /* Efek Panel Kaca */
+        padding: 20px;
+        background: rgba(10, 10, 10, 0.6);
+        backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      }
+      
+      .profile-mini {
+        display: flex; align-items: center; gap: 15px; margin-bottom: 10px;
+        border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;
+      }
+      .mini-avatar {
+        width: 40px; height: 40px; border-radius: 50%; background: #ddd;
+        background-image: url('https://cdn.glitch.global/d2966571-3836-4109-9407-395a89601689/profile_placeholder.png?v=1664899253450');
+        background-size: cover; border: 2px solid #00f2ea;
+      }
+      .mini-text h3 { margin: 0; color: white; font-size: 16px; font-weight: 800; }
+      .mini-text p { margin: 0; color: #aaa; font-size: 11px; }
+
+      .hud-btn {
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+        padding: 12px; border-radius: 12px;
+        font-weight: 700; font-size: 14px; text-decoration: none; color: white;
+        transition: transform 0.2s; border: 1px solid rgba(255,255,255,0.05);
+      }
+      .hud-btn:active { transform: scale(0.97); }
+
+      /* Styling Tombol Spesifik */
+      .wa { background: linear-gradient(90deg, rgba(37, 211, 102, 0.8), rgba(37, 211, 102, 0.4)); }
+      .ig { background: linear-gradient(90deg, rgba(131, 58, 180, 0.8), rgba(253, 29, 29, 0.4)); }
+      .web { background: linear-gradient(90deg, rgba(0, 242, 234, 0.8), rgba(0, 119, 181, 0.4)); color: white; }
+
       .hidden { display: none !important; }
     </style>
   </head>
   
   <body>
     <div id="overlay">
-      <h1 style="color: #FFD700; margin-bottom: 10px;">KING ACCESS</h1>
-      <button id="start-btn">BUKA KARTU</button>
+      <div class="brand-title">DIMAS KURNIAWAN</div>
+      <p style="color: #888; font-size: 12px; margin-bottom: 20px; letter-spacing: 2px;">AUGMENTED REALITY SYSTEM</p>
+      <button id="start-btn">INITIALIZE</button>
     </div>
 
-    <div id="hud-container">
-      <a href="https://wa.me/6281234567890" target="_blank" class="btn-gold">
-        <i class="fab fa-whatsapp"></i> HUBUNGI SAYA
+    <div id="hud-menu">
+      <div class="profile-mini">
+        <div class="mini-avatar"></div>
+        <div class="mini-text">
+          <h3>Dimas Kurniawan</h3>
+          <p>CEO & Founder GP69</p>
+        </div>
+      </div>
+
+      <a href="https://wa.me/6281234567890" target="_blank" class="hud-btn wa">
+        <i class="fab fa-whatsapp"></i> WhatsApp
       </a>
-      <a href="https://instagram.com/dimaskurniawan" target="_blank" class="btn-gold">
-        <i class="fab fa-instagram"></i> INSTAGRAM
+      <a href="https://instagram.com/dimaskurniawan" target="_blank" class="hud-btn ig">
+        <i class="fab fa-instagram"></i> Instagram
+      </a>
+      <a href="https://gp69.xyz" target="_blank" class="hud-btn web">
+        <i class="fas fa-globe"></i> Buka Website
       </a>
     </div>
 
-    <a-scene mindar-image="imageTargetSrc: ./targets/bunga.mind;" 
+    <a-scene mindar-image="imageTargetSrc: ./targets/targets.mind;" 
              color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" 
              vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
       
@@ -71,28 +125,24 @@
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      <a-entity id="ar-target" mindar-image-target="targetIndex: 0">
+      <a-entity id="target-ar" mindar-image-target="targetIndex: 0">
         
-        <a-entity position="0 0 0" scale="0.55 0.55 0.55">
+        <a-entity position="0 0 0" scale="0.5 0.5 0.5">
             
-            <a-plane color="#0a0a0a" width="2" height="3" position="0 0.2 0" opacity="0.95"></a-plane>
-            <a-plane color="#FFD700" width="2.1" height="3.1" position="0 0.2 -0.01"></a-plane>
+            <a-circle src="#profile-img" radius="0.6" position="0 0.8 0"></a-circle>
+            
+            <a-ring radius-inner="0.63" radius-outer="0.66" color="#00f2ea" position="0 0.8 0"
+                    animation="property: rotation; to: 0 0 -360; dur: 8000; easing: linear; loop: true"></a-ring>
+            <a-ring radius-inner="0.72" radius-outer="0.74" color="#ff0050" position="0 0.8 0"
+                    animation="property: scale; to: 1.05 1.05 1.05; dir: alternate; dur: 1000; loop: true"></a-ring>
 
-            <a-triangle color="#FFD700" vertex-a="0 0.5 0" vertex-b="-0.2 -0.2 0" vertex-c="0.2 -0.2 0" position="0 1.3 0.1"></a-triangle>
-            <a-triangle color="#FFD700" vertex-a="0 0.4 0" vertex-b="-0.2 -0.2 0" vertex-c="0.2 -0.2 0" position="-0.25 1.25 0.1" rotation="0 0 -20"></a-triangle>
-            <a-triangle color="#FFD700" vertex-a="0 0.4 0" vertex-b="-0.2 -0.2 0" vertex-c="0.2 -0.2 0" position="0.25 1.25 0.1" rotation="0 0 20"></a-triangle>
-
-            <a-circle src="#profile-img" radius="0.6" position="0 0.5 0.1"></a-circle>
-            <a-ring color="#FFD700" radius-inner="0.6" radius-outer="0.65" position="0 0.5 0.1"></a-ring>
-
-            <a-text value="DIMAS KURNIAWAN" align="center" position="0 -0.4 0.1" width="6" 
-                    color="#FFD700" font="roboto" negate="false"></a-text>
-            <a-plane color="#FFD700" width="1.5" height="0.02" position="0 -0.6 0.1"></a-plane>
-            <a-text value="CEO & FOUNDER GP69" align="center" position="0 -0.8 0.1" width="4" 
-                    color="#FFFFFF" font="roboto" negate="false"></a-text>
-
-            <a-plane color="#FFD700" width="0.1" height="0.1" position="-0.8 -0.4 0.1" rotation="0 0 45"></a-plane>
-            <a-plane color="#FFD700" width="0.1" height="0.1" position="0.8 -0.4 0.1" rotation="0 0 45"></a-plane>
+            <a-text value="DIMAS KURNIAWAN" color="white" align="center" position="0 -0.1 0" width="8"></a-text>
+            <a-text value="CEO & FOUNDER GP69" color="#00f2ea" align="center" position="0 -0.4 0" width="4"></a-text>
+            
+            <a-entity position="0 -0.9 0" animation="property: position; to: 0 -1.1 0; dir: alternate; dur: 800; loop: true">
+                <a-triangle color="#aaa" vertex-a="0 0 0" vertex-b="-0.15 0.3 0" vertex-c="0.15 0.3 0" rotation="180 0 0"></a-triangle>
+                <a-text value="MENU DI BAWAH" align="center" position="0 0.5 0" width="3" color="#aaa"></a-text>
+            </a-entity>
 
         </a-entity>
       </a-entity>
@@ -101,19 +151,23 @@
     <script>
       const startBtn = document.getElementById('start-btn');
       const overlay = document.getElementById('overlay');
-      const hudContainer = document.getElementById('hud-container');
-      const arTarget = document.getElementById('ar-target');
+      const hudMenu = document.getElementById('hud-menu');
+      const arTarget = document.getElementById('target-ar');
 
+      // 1. Hilangkan Overlay
       startBtn.addEventListener('click', () => {
         overlay.classList.add('hidden');
       });
 
-      // Menu Muncul Pas Target Ketemu
+      // 2. LOGIKA TETAP (WORK 100%)
       arTarget.addEventListener("mindar-image-targetFound", () => {
-        hudContainer.classList.add('active');
+        console.log("KARTU KETEMU!");
+        hudMenu.style.display = 'flex'; // Munculkan Menu
       });
+
       arTarget.addEventListener("mindar-image-targetLost", () => {
-        hudContainer.classList.remove('active');
+        console.log("KARTU HILANG!");
+        hudMenu.style.display = 'none'; // Sembunyikan Menu
       });
     </script>
   </body>
