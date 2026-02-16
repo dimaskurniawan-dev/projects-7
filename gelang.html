@@ -2,29 +2,30 @@
 <html lang="id">
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>REAL BLUE ICE DIAMOND</title>
+    <title>HOLOGRAM DIAMOND</title>
     
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.0.0/dist/aframe-extras.min.js"></script>
     
     <script>
-      AFRAME.registerComponent('make-ice', {
+      AFRAME.registerComponent('make-hologram', {
         init: function () {
           this.el.addEventListener('model-loaded', e => {
-            let mesh = this.el.getObject3D('mesh');
+            const mesh = this.el.getObject3D('mesh');
+            if (!mesh) return;
+
             mesh.traverse(node => {
               if (node.isMesh) {
-                // 1. Ganti Warna jadi Biru Cyan
-                node.material.color.setHex(0x00ffff);
-                // 2. Paksa dia MENYALA (Emissive)
-                node.material.emissive.setHex(0x00ffff);
-                node.material.emissiveIntensity = 0.8; // Makin gede makin silau
-                // 3. Bikin kayak Kaca/Es
-                node.material.roughness = 0.0;
-                node.material.metalness = 0.5;
-                node.material.transparent = true;
-                node.material.opacity = 0.9;
+                // KITA GANTI KULITNYA JADI CAHAYA MURNI
+                // MeshBasicMaterial = Gak butuh lampu, dia nyala sendiri
+                node.material = new THREE.MeshBasicMaterial({
+                  color: 0x00ffff,   // WARNA CYAN (Ganti sesuka hati)
+                  transparent: true, // Tembus pandang dikit
+                  opacity: 0.8,      // Tingkat kepekatan (0.0 - 1.0)
+                  side: THREE.DoubleSide, // Kelihatan dari luar & dalam
+                  blending: THREE.AdditiveBlending, // EFEK LASER/GLOWING (PENTING!)
+                  depthWrite: false  // Biar gak numpuk aneh
+                });
               }
             });
           });
@@ -36,14 +37,14 @@
       body { margin: 0; overflow: hidden; background: black; }
       #overlay {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: radial-gradient(circle, #001f3f, #000000);
+        background: rgba(0,0,0,0.85);
         display: flex; flex-direction: column; justify-content: center; align-items: center;
         z-index: 999;
       }
       #start-btn {
-        padding: 12px 30px; background: transparent; border: 2px solid #00ffff;
-        color: #00ffff; font-weight: 800; border-radius: 30px; cursor: pointer;
-        box-shadow: 0 0 15px #00ffff; letter-spacing: 2px;
+        padding: 12px 30px; background: #00ffff; border: none;
+        color: black; font-weight: 900; border-radius: 50px; cursor: pointer;
+        box-shadow: 0 0 25px #00ffff; font-family: sans-serif; letter-spacing: 2px;
       }
       .hidden { display: none !important; }
     </style>
@@ -51,12 +52,12 @@
   
   <body>
     <div id="overlay">
-      <h1 style="color: white; font-family: sans-serif; font-size: 18px;">BLUE ICE MODE</h1>
-      <button id="start-btn">ACTIVATE</button>
+      <h1 style="color: white; font-family: sans-serif; margin-bottom: 5px;">HOLO-MODE</h1>
+      <button id="start-btn">SCAN SEKARANG</button>
     </div>
 
     <a-scene mindar-image="imageTargetSrc: ./targets/bunga.mind;" 
-             color-space="sRGB" renderer="colorManagement: true; physicallyCorrectLights: true;"
+             color-space="sRGB" renderer="colorManagement: true; sortObjects: true;"
              vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
       
       <a-assets>
@@ -65,28 +66,24 @@
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      <a-light type="ambient" intensity="2"></a-light>
-      <a-light type="point" position="0 2 2" intensity="1" color="#00ffff"></a-light>
-
       <a-entity id="ar-target" mindar-image-target="targetIndex: 0">
         
         <a-entity position="0 0 0" scale="0.3 0.3 0.3">
 
             <a-gltf-model src="#diamond-model" 
-                          make-ice 
+                          make-hologram 
                           rotation="0 0 0" position="0 0.5 0" scale="1 1 1"
                           animation="property: rotation; to: 0 360 0; dur: 8000; easing: linear; loop: true">
             </a-gltf-model>
 
-            <a-torus radius="1.3" radius-tubular="0.02" color="#00ffff" rotation="45 0 0"
-                     material="emissive: #00ffff; emissiveIntensity: 2; opacity: 0.8"
-                     animation="property: rotation; to: 45 360 0; dur: 4000; easing: linear; loop: true"></a-torus>
+            <a-sphere radius="0.5" color="white" position="0 0.5 0"
+                      material="shader: flat; opacity: 0.9"
+                      animation="property: scale; to: 1.2 1.2 1.2; dir: alternate; dur: 500; loop: true">
+            </a-sphere>
 
             <a-ring radius-inner="1.5" radius-outer="1.55" color="#00ffff" rotation="-90 0 0" position="0 0 0"
-                    material="emissive: #00ffff; emissiveIntensity: 1"
+                    material="shader: flat; transparent: true; opacity: 0.5; blending: additive"
                     animation="property: scale; to: 1.1 1.1 1.1; dir: alternate; dur: 1000; loop: true"></a-ring>
-
-            <a-light type="point" color="#00ffff" intensity="5" distance="4" position="0 0.5 0"></a-light>
 
         </a-entity>
       </a-entity>
