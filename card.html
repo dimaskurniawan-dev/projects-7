@@ -7,53 +7,68 @@
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
     
-    <script>
-      // Komponen pembuka link (Universal)
-      AFRAME.registerComponent('buka-link', {
-        schema: {
-          url: {type: 'string', default: ''}
-        },
-        init: function () {
-          var data = this.data;
-          var el = this.el;
-
-          // Saat diklik/disentuh
-          el.addEventListener('click', function () {
-            console.log("Tombol diklik: " + data.url);
-            
-            // Animasi visual biar user tau tombol kepencet (Scale down dikit)
-            el.setAttribute('scale', '0.9 0.9 0.9');
-            setTimeout(() => { el.setAttribute('scale', '1 1 1'); }, 200);
-
-            // Buka Link (Jeda dikit biar animasi jalan dulu)
-            setTimeout(() => {
-                window.location.href = data.url;
-            }, 300);
-          });
-        }
-      });
-    </script>
-
     <style>
-      body { margin: 0; overflow: hidden; font-family: sans-serif; }
+      body { margin: 0; overflow: hidden; font-family: 'Segoe UI', sans-serif; }
+      
+      /* 1. LAYAR PEMBUKA */
       #overlay {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.8); z-index: 999;
+        background: black; z-index: 9999;
         display: flex; flex-direction: column; justify-content: center; align-items: center;
       }
+      
       #start-btn {
-        padding: 15px 30px; background: #00ffff; color: black; font-weight: bold;
-        border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;
-        z-index: 1000; /* Pastikan tombol start di atas segalanya */
+        padding: 15px 40px; background: #00ffff; color: black; font-weight: 800;
+        border: none; border-radius: 50px; cursor: pointer; margin-top: 20px;
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
       }
+
+      /* 2. MENU TOMBOL HUD (Ini yang bikin Gacor) */
+      /* Awalnya sembunyi (display: none), muncul pas target ketemu */
+      #hud-menu {
+        position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+        width: 90%; max-width: 400px;
+        display: none; /* Rahasia kuncinya di sini */
+        flex-direction: column; gap: 10px;
+        z-index: 1000;
+      }
+
+      .hud-btn {
+        display: flex; align-items: center; justify-content: center;
+        padding: 12px; border-radius: 10px;
+        font-weight: bold; text-decoration: none; color: white;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        transition: transform 0.2s;
+        backdrop-filter: blur(5px); /* Efek Kaca */
+      }
+      
+      .hud-btn:active { transform: scale(0.95); }
+      
+      /* Warna Tombol */
+      .wa { background: rgba(37, 211, 102, 0.9); border: 1px solid #25D366; }
+      .ig { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
+      .web { background: rgba(0, 119, 181, 0.9); border: 1px solid #0077b5; }
+
       .hidden { display: none !important; }
     </style>
   </head>
   
   <body>
     <div id="overlay">
-      <h2 style="color: white;">GP69 CONNECT</h2>
+      <h2 style="color: white; letter-spacing: 2px;">GP69 CONNECT</h2>
       <button id="start-btn">SCAN KARTU NAMA</button>
+    </div>
+
+    <div id="hud-menu">
+      <a href="https://wa.me/6281234567890" target="_blank" class="hud-btn wa">
+        💬 CHAT WHATSAPP
+      </a>
+      <a href="https://instagram.com/usernameabang" target="_blank" class="hud-btn ig">
+        📸 INSTAGRAM
+      </a>
+      <a href="https://gp69.xyz" target="_blank" class="hud-btn web">
+        🌐 BUKA WEBSITE
+      </a>
     </div>
 
     <a-scene mindar-image="imageTargetSrc: ./targets/bunga.mind;" 
@@ -64,48 +79,50 @@
         <img id="profile-img" src="https://cdn.glitch.global/d2966571-3836-4109-9407-395a89601689/profile_placeholder.png?v=1664899253450" crossorigin="anonymous">
       </a-assets>
 
-      <a-camera position="0 0 0" look-controls="enabled: false" 
-                cursor="fuse: false; rayOrigin: mouse;" 
-                raycaster="far: 10000; objects: .clickable">
-      </a-camera>
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      <a-entity id="ar-target" mindar-image-target="targetIndex: 0">
+      <a-entity id="target-ar" mindar-image-target="targetIndex: 0">
+        
         <a-entity position="0 0 0" scale="0.5 0.5 0.5">
+            <a-circle src="#profile-img" radius="0.6" position="0 1 0"
+                      animation="property: rotation; to: 0 360 0; dur: 10000; easing: linear; loop: true"></a-circle>
+            
+            <a-ring radius-inner="0.65" radius-outer="0.7" color="#00ffff" position="0 1 0"
+                    animation="property: scale; to: 1.1 1.1 1.1; dir: alternate; dur: 1000; loop: true"></a-ring>
 
-            <a-circle src="#profile-img" radius="0.6" position="0 1 0"></a-circle>
             <a-text value="NAMA ABANG" color="white" align="center" position="0 0.2 0" width="8"></a-text>
             <a-text value="CEO GP69" color="#00ffff" align="center" position="0 -0.1 0" width="5"></a-text>
-
-            <a-entity position="-0.8 -0.8 0.1">
-                <a-plane class="clickable" color="#25D366" width="1.5" height="0.5"
-                         buka-link="url: https://wa.me/6281234567890">
-                </a-plane>
-                <a-text value="WHATSAPP" align="center" position="0 0 0.05" width="4" color="white"></a-text>
+            
+            <a-entity position="0 -0.8 0" animation="property: position; to: 0 -1.0 0; dir: alternate; dur: 800; loop: true">
+                <a-triangle color="#00ffff" vertex-a="0 0 0" vertex-b="-0.2 0.4 0" vertex-c="0.2 0.4 0" rotation="180 0 0"></a-triangle>
+                <a-text value="KLIK DI BAWAH" align="center" position="0 0.6 0" width="4" color="#00ffff"></a-text>
             </a-entity>
-
-            <a-entity position="0.8 -0.8 0.1">
-                <a-plane class="clickable" color="#C13584" width="1.5" height="0.5"
-                         buka-link="url: https://instagram.com/usernameabang">
-                </a-plane>
-                <a-text value="INSTAGRAM" align="center" position="0 0 0.05" width="4" color="white"></a-text>
-            </a-entity>
-
-            <a-entity position="0 -1.5 0.1">
-                <a-plane class="clickable" color="#0077b5" width="3.1" height="0.5"
-                         buka-link="url: https://gp69.xyz">
-                </a-plane>
-                <a-text value="BUKA WEBSITE" align="center" position="0 0 0.05" width="4" color="white"></a-text>
-            </a-entity>
-
         </a-entity>
+
       </a-entity>
     </a-scene>
 
     <script>
       const startBtn = document.getElementById('start-btn');
       const overlay = document.getElementById('overlay');
+      const hudMenu = document.getElementById('hud-menu');
+      const arTarget = document.getElementById('target-ar');
+
+      // 1. Hilangkan Overlay Awal
       startBtn.addEventListener('click', () => {
         overlay.classList.add('hidden');
+      });
+
+      // 2. LOGIKA SAKTI: Target Ketemu -> Muncul Tombol
+      arTarget.addEventListener("mindar-image-targetFound", () => {
+        console.log("KARTU KETEMU! Munculkan Menu...");
+        hudMenu.style.display = 'flex'; // Munculin Tombol
+      });
+
+      // 3. Target Hilang -> Sembunyi Tombol
+      arTarget.addEventListener("mindar-image-targetLost", () => {
+        console.log("KARTU HILANG! Sembunyikan Menu...");
+        hudMenu.style.display = 'none'; // Umpetin Tombol
       });
     </script>
   </body>
