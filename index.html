@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>GP69 REALITY NODE</title>
+    
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.0.0/dist/aframe-extras.min.js"></script>
+
+    <style>
+      /* 2. DESAIN ANTARMUKA (UI) */
+      body { margin: 0; overflow: hidden; font-family: 'Courier New', Courier, monospace; }
+      
+      /* Layar Hitam Penutup (Overlay) */
+      #overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: #000000; z-index: 999;
+        display: flex; flex-direction: column; justify-content: center; align-items: center;
+      }
+      
+      /* Tombol Start "Hacker Style" */
+      #start-btn {
+        padding: 15px 30px; 
+        font-size: 18px; 
+        font-weight: bold;
+        background: transparent; 
+        color: #00ff41; /* Hijau Hacker */
+        border: 2px solid #00ff41; 
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        transition: 0.3s;
+      }
+      
+      #start-btn:hover {
+        background: #00ff41;
+        color: #000000;
+        box-shadow: 0 0 20px #00ff41;
+      }
+
+      .hidden { display: none !important; }
+    </style>
+  </head>
+  
+  <body>
+    <div id="overlay">
+      <h1 style="color: white; text-shadow: 0 0 10px white;">GP69 SYSTEM</h1>
+      <p style="color: #ccc; margin-bottom: 20px;">[ AR_VISION_READY ]</p>
+      <button id="start-btn">AKTIFKAN PEMINDAI</button>
+    </div>
+
+    <a-scene mindar-image="imageTargetSrc: ./targets/targets.mind; filterMinCF:0.0001; filterBeta: 0.001;" 
+             color-space="sRGB" 
+             renderer="colorManagement: true, physicallyCorrectLights" 
+             vr-mode-ui="enabled: false" 
+             device-orientation-permission-ui="enabled: false">
+      
+      <a-assets>
+        <audio id="sound-halo" src="./assets/audio/halo.mp3" preload="auto"></audio>
+        
+        <a-asset-item id="robot-model" src="https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Models@master/2.0/BrainStem/glTF-Binary/BrainStem.glb"></a-asset-item>
+      </a-assets>
+
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+      <a-entity id="ar-target" mindar-image-target="targetIndex: 0">
+        
+        <a-gltf-model rotation="0 0 0" position="0 -0.5 0" scale="0.5 0.5 0.5" 
+                      src="#robot-model" 
+                      animation-mixer> </a-gltf-model>
+
+        <a-text value="STATUS: TERHUBUNG" align="center" position="0 0.8 0" color="#00ff41" width="4"></a-text>
+        <a-text value="MILIK: BOSS GP69" align="center" position="0 0.6 0" color="#ffffff" width="3"></a-text>
+
+      </a-entity>
+    </a-scene>
+
+    <script>
+      const startBtn = document.getElementById('start-btn');
+      const overlay = document.getElementById('overlay');
+      const arTarget = document.getElementById('ar-target');
+      
+      // Ambil file audio dari HTML di atas
+      const audio = document.getElementById('sound-halo'); 
+
+      // FUNGSI 1: Saat Tombol Start Ditekan
+      startBtn.addEventListener('click', () => {
+        // Hilangkan layar hitam
+        overlay.classList.add('hidden');
+        
+        // Pancing audio (Play sebentar lalu pause) biar browser kasih izin
+        audio.play().then(() => {
+          audio.pause();
+          audio.currentTime = 0;
+        }).catch(error => {
+          console.log("Audio permission error:", error);
+        });
+      });
+
+      // FUNGSI 2: Saat Marker Ditemukan (Kamera melihat gambar)
+      arTarget.addEventListener("mindar-image-targetFound", () => {
+        console.log("TARGET LOCKED: Memutar Audio...");
+        audio.play();
+      });
+
+      // FUNGSI 3: Saat Marker Hilang (Kamera digeser)
+      arTarget.addEventListener("mindar-image-targetLost", () => {
+        console.log("TARGET LOST: Audio Stop.");
+        audio.pause();
+        audio.currentTime = 0; // Reset lagu ke awal
+      });
+    </script>
+  </body>
+</html>
